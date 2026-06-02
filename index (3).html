@@ -1,0 +1,1068 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
+<title>Sommerduell 2026</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{
+  background:#1a1a2e;
+  display:flex;justify-content:center;align-items:flex-start;
+  min-height:100vh;padding:16px;
+  font-family:'Courier New',Courier,monospace;
+}
+.gb{
+  width:100%;max-width:340px;
+  background:#8B956D;
+  border-radius:10px 10px 50px 10px;
+  padding:16px 16px 28px;
+  box-shadow:inset 0 2px 0 rgba(255,255,255,.3),0 20px 60px rgba(0,0,0,.8);
+  border:2px solid #717A56;
+}
+.gb-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
+.gb-brand{font-size:9px;font-weight:bold;color:#2a2a2a;letter-spacing:.08em;}
+.gb-sub{font-size:5px;color:#444;margin-top:2px;}
+.led{width:8px;height:8px;border-radius:50%;background:#cc2200;box-shadow:0 0 8px rgba(204,34,0,.8);}
+.screen-housing{
+  background:#2a2a2a;border-radius:8px 8px 36px 8px;
+  padding:12px;margin-bottom:14px;
+  box-shadow:inset 0 3px 6px rgba(0,0,0,.6);
+}
+.screen-bezel{background:#111;border-radius:4px;padding:6px;}
+.screen{
+  background:#9BBC0F;
+  border-radius:2px;
+  border:1px solid rgba(0,0,0,.5);
+  overflow:hidden;
+  position:relative;
+}
+.hud{
+  background:rgba(15,56,15,0.15);
+  border-bottom:1px solid rgba(15,56,15,0.3);
+  display:flex;justify-content:space-between;
+  padding:4px 6px;
+  font-size:8px;font-weight:bold;color:#0F380F;
+}
+.game-area{
+  min-height:200px;
+  padding:8px;
+  position:relative;
+}
+.hint-bar{
+  background:rgba(15,56,15,0.15);
+  border-top:1px solid rgba(15,56,15,0.3);
+  padding:4px 6px;
+  font-size:7px;font-weight:bold;color:#0F380F;
+  min-height:16px;line-height:1.4;
+}
+
+/* Game content styles */
+.gb-text{color:#0F380F;font-family:'Courier New',monospace;font-weight:bold;}
+.gb-text-sm{font-size:8px;}
+.gb-text-md{font-size:11px;}
+.gb-text-lg{font-size:14px;}
+.gb-text-xl{font-size:18px;}
+.gb-text-dim{color:#306230;}
+.gb-box{border:2px solid #0F380F;padding:6px;margin:4px 0;background:rgba(15,56,15,0.08);}
+.gb-box-dim{border:1px solid #306230;padding:6px;margin:4px 0;}
+.gb-bar{background:#0F380F;height:3px;border-radius:2px;}
+.gb-selected{background:#0F380F;color:#9BBC0F !important;padding:3px 6px;}
+.gb-unsel{padding:3px 6px;color:#306230;}
+.gb-row{display:flex;justify-content:space-between;align-items:center;margin:2px 0;}
+.gb-center{text-align:center;}
+.gb-blink{animation:blink .6s step-end infinite;}
+@keyframes blink{50%{opacity:0;}}
+.hp-wrap{border:1px solid #0F380F;height:8px;width:100%;background:transparent;margin:2px 0;}
+.hp-fill{height:100%;background:#0F380F;transition:width .3s;}
+.sprite{font-size:28px;line-height:1;}
+.flash{animation:flash .15s ease-in-out 3;}
+@keyframes flash{50%{opacity:0.2;}}
+.shake{animation:shake .2s ease-in-out 2;}
+@keyframes shake{25%{transform:translateX(-4px);}75%{transform:translateX(4px);}100%{transform:translateX(0);}}
+
+/* Battle animations */
+@keyframes attackRight{0%{transform:translateX(0);}40%{transform:translateX(18px);}70%{transform:translateX(18px);}100%{transform:translateX(0);}}
+@keyframes attackLeft{0%{transform:translateX(0);}40%{transform:translateX(-18px);}70%{transform:translateX(-18px);}100%{transform:translateX(0);}}
+@keyframes hitFlash{0%{filter:brightness(1);}20%{filter:brightness(3) saturate(0);}40%{filter:brightness(1);}60%{filter:brightness(3) saturate(0);}80%{filter:brightness(1);}100%{filter:brightness(1);}}
+@keyframes knockback{0%{transform:translateX(0);}30%{transform:translateX(-12px) rotate(-8deg);}60%{transform:translateX(-8px) rotate(-5deg);}100%{transform:translateX(0) rotate(0);}}
+@keyframes knockbackRight{0%{transform:translateX(0);}30%{transform:translateX(12px) rotate(8deg);}60%{transform:translateX(8px) rotate(5deg);}100%{transform:translateX(0) rotate(0);}}
+@keyframes faint{0%{transform:rotate(0) translateY(0);opacity:1;}100%{transform:rotate(90deg) translateY(20px);opacity:0;}}
+@keyframes victoryBounce{0%,100%{transform:translateY(0);}30%{transform:translateY(-8px);}60%{transform:translateY(-4px);}}
+.mon-attack-r{animation:attackRight 0.35s ease-in-out;}
+.mon-attack-l{animation:attackLeft 0.35s ease-in-out;}
+.mon-hit{animation:hitFlash 0.4s ease-in-out;}
+.mon-knockback{animation:knockback 0.3s ease-out;}
+.mon-knockback-r{animation:knockbackRight 0.3s ease-out;}
+.mon-faint{animation:faint 0.7s ease-in forwards;}
+.mon-victory{animation:victoryBounce 0.5s ease-in-out 2;}
+
+/* Controls */
+.controls{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;padding:0 4px;}
+.dpad{position:relative;width:84px;height:84px;}
+.dpad-h,.dpad-v{position:absolute;background:#1a1a1a;border-radius:3px;}
+.dpad-h{width:84px;height:28px;top:28px;left:0;box-shadow:0 4px 0 #000;}
+.dpad-v{width:28px;height:84px;top:0;left:28px;box-shadow:0 4px 0 #000;}
+.dpad-c{position:absolute;width:28px;height:28px;top:28px;left:28px;background:#111;z-index:2;}
+.dpad button{position:absolute;background:transparent;border:none;color:rgba(255,255,255,.6);font-size:9px;cursor:pointer;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;z-index:3;width:28px;height:28px;}
+.dpad button:active{opacity:.4;}
+#btnUp{top:2px;left:28px;}#btnDown{bottom:2px;left:28px;}
+#btnLeft{top:28px;left:2px;}#btnRight{top:28px;right:2px;}
+.ab{display:flex;gap:8px;align-items:flex-end;transform:rotate(-20deg);margin-right:6px;}
+.ab button{width:34px;height:34px;border:none;border-radius:50%;background:#7B2D8B;color:rgba(255,255,255,.9);font:bold 8px 'Courier New',monospace;cursor:pointer;box-shadow:0 5px 0 #4a1a5a;-webkit-tap-highlight-color:transparent;}
+.ab button:active{transform:translateY(3px);box-shadow:0 2px 0 #4a1a5a;}
+.ab-lbl{display:flex;flex-direction:column;align-items:center;gap:2px;}
+.ab-lbl span{font-size:4px;color:#3a3a3a;font-family:'Courier New',monospace;}
+.meta{display:flex;justify-content:center;gap:18px;margin-bottom:12px;}
+.meta-w{display:flex;flex-direction:column;align-items:center;gap:2px;}
+.meta button{width:34px;height:11px;border:none;border-radius:6px;background:#5a5a6e;box-shadow:0 3px 0 #3a3a4e;transform:rotate(-10deg);cursor:pointer;-webkit-tap-highlight-color:transparent;}
+.meta button:active{transform:rotate(-10deg) translateY(2px);box-shadow:0 1px 0 #3a3a4e;}
+.meta-lbl{font-size:6px;color:#111;font-family:'Courier New',monospace;font-weight:bold;margin-top:3px;}
+.speaker{position:absolute;bottom:18px;right:16px;display:flex;gap:3px;}
+.sh{border-radius:2px;background:rgba(0,0,0,.35);}
+.gb-foot{text-align:center;margin-top:6px;font-size:4px;color:rgba(0,0,0,.3);letter-spacing:.12em;font-family:'Courier New',monospace;}
+#btnMute{position:absolute;top:6px;right:14px;background:none;border:none;font-size:5px;color:#444;cursor:pointer;padding:2px 4px;font-family:'Courier New',monospace;}
+</style>
+</head>
+<body>
+<div class="gb">
+  <button id="btnMute">SND:ON</button>
+  <div class="gb-top">
+    <div><div class="gb-brand">&#9679; GAME BOY</div><div class="gb-sub">SOMMERDUELL EDITION</div></div>
+    <div class="led"></div>
+  </div>
+  <div class="screen-housing">
+    <div class="screen-bezel">
+      <div class="screen">
+        <div class="hud">
+          <span id="hudS">BOOT</span>
+          <span id="hudP">*0000</span>
+          <span id="hudT">00:00</span>
+        </div>
+        <div class="game-area" id="gameArea"></div>
+        <div class="hint-bar" id="hintBar">Druecke START!</div>
+      </div>
+    </div>
+    <div style="display:flex;justify-content:flex-end;align-items:center;gap:4px;margin-top:5px;">
+      <span style="font-size:5px;color:#555;font-family:'Courier New',monospace;">BATTERY</span>
+      <div style="width:14px;height:7px;border:1px solid #555;border-radius:1px;padding:1px;position:relative;">
+        <div style="width:70%;height:100%;background:#4a8a4a;border-radius:1px;"></div>
+        <div style="position:absolute;right:-3px;top:50%;transform:translateY(-50%);width:2px;height:3px;background:#555;"></div>
+      </div>
+    </div>
+  </div>
+  <div class="controls">
+    <div class="dpad">
+      <div class="dpad-h"></div><div class="dpad-v"></div><div class="dpad-c"></div>
+      <button id="btnUp">&#9650;</button>
+      <button id="btnDown">&#9660;</button>
+      <button id="btnLeft">&#9664;</button>
+      <button id="btnRight">&#9654;</button>
+    </div>
+    <div class="ab">
+      <div class="ab-lbl"><button id="btnB">B</button><span>B</span></div>
+      <div class="ab-lbl"><button id="btnA">A</button><span>A</span></div>
+    </div>
+  </div>
+  <div class="meta">
+    <div class="meta-w"><button id="btnSelect"></button><span class="meta-lbl">SELECT</span></div>
+    <div class="meta-w"><button id="btnStart"></button><span class="meta-lbl">START</span></div>
+  </div>
+  <div class="speaker">
+    <div class="sh" style="width:3px;height:18px;"></div>
+    <div class="sh" style="width:3px;height:22px;"></div>
+    <div class="sh" style="width:3px;height:20px;"></div>
+    <div class="sh" style="width:3px;height:16px;"></div>
+    <div class="sh" style="width:3px;height:12px;"></div>
+  </div>
+  <div class="gb-foot">NINTENDO &middot; GAME BOY &middot; DMG-01</div>
+</div>
+
+<script>
+var INVITE={title1:"SOMMERDUELL",title2:"DER PAARE",sub:"TIME WARP EDITION",date:"SA 07.06.2026",time:"11:00 UHR",ort1:"BAHNHOFSTR. 8",ort2:"01259 DRESDEN"};
+var ga=document.getElementById("gameArea");
+var hudS=document.getElementById("hudS");
+var hudP=document.getElementById("hudP");
+var hudT=document.getElementById("hudT");
+var hintBar=document.getElementById("hintBar");
+
+// Sound
+var actx=null,muted=false;
+function ensureAudio(){if(actx)return;try{actx=new(window.AudioContext||window.webkitAudioContext)();}catch(e){}}
+function beep(f,d,t,v){if(muted)return;ensureAudio();if(!actx)return;try{var o=actx.createOscillator(),g=actx.createGain();o.type=t||"square";o.frequency.value=f;g.gain.value=v||0.05;o.connect(g);g.connect(actx.destination);o.start();o.stop(actx.currentTime+(d||0.06));}catch(e){}}
+function fanfare(){[523,659,784,988].forEach(function(f,i){setTimeout(function(){beep(f,.08,"square",.05);},i*80);});}
+function blip(){beep(880,.04,"square",.04);}
+function bonk(){beep(120,.1,"square",.06);}
+function boop(){beep(440,.05,"square",.04);}
+function startSnd(){beep(330,.07);setTimeout(function(){beep(550,.07);},80);setTimeout(function(){beep(880,.1);},160);}
+document.getElementById("btnMute").addEventListener("click",function(){muted=!muted;document.getElementById("btnMute").textContent=muted?"SND:OFF":"SND:ON";if(!muted)startSnd();});
+
+// Input
+var inp={up:false,down:false,left:false,right:false,A:false,B:false,start:false};
+var prev={up:false,down:false,A:false,B:false,start:false};
+function bind(id,k){
+  var el=document.getElementById(id);
+  el.addEventListener("touchstart",function(e){e.preventDefault();inp[k]=true;},{passive:false});
+  el.addEventListener("touchend",function(e){e.preventDefault();inp[k]=false;},{passive:false});
+  el.addEventListener("mousedown",function(){inp[k]=true;});
+  el.addEventListener("mouseup",function(){inp[k]=false;});
+  el.addEventListener("mouseleave",function(){inp[k]=false;});
+}
+bind("btnUp","up");bind("btnDown","down");bind("btnLeft","left");bind("btnRight","right");
+bind("btnA","A");bind("btnB","B");
+document.getElementById("btnStart").addEventListener("mousedown",function(){inp.start=true;});
+document.getElementById("btnStart").addEventListener("mouseup",function(){inp.start=false;});
+document.getElementById("btnStart").addEventListener("touchstart",function(e){e.preventDefault();inp.start=true;},{passive:false});
+document.getElementById("btnStart").addEventListener("touchend",function(e){e.preventDefault();inp.start=false;},{passive:false});
+var selT=null;
+document.getElementById("btnSelect").addEventListener("mousedown",function(){selT=setTimeout(function(){if(!game.finished)nextStage();},2000);});
+document.getElementById("btnSelect").addEventListener("mouseup",function(){clearTimeout(selT);});
+document.getElementById("btnSelect").addEventListener("touchstart",function(e){e.preventDefault();selT=setTimeout(function(){if(!game.finished)nextStage();},2000);},{passive:false});
+document.getElementById("btnSelect").addEventListener("touchend",function(e){e.preventDefault();clearTimeout(selT);},{passive:false});
+window.addEventListener("keydown",function(e){
+  if(e.key==="ArrowUp")inp.up=true;if(e.key==="ArrowDown")inp.down=true;
+  if(e.key==="ArrowLeft")inp.left=true;if(e.key==="ArrowRight")inp.right=true;
+  if(e.key==="a"||e.key==="A")inp.A=true;if(e.key==="b"||e.key==="B")inp.B=true;
+  if(e.key===" "||e.key==="Enter")inp.start=true;
+});
+window.addEventListener("keyup",function(e){
+  if(e.key==="ArrowUp")inp.up=false;if(e.key==="ArrowDown")inp.down=false;
+  if(e.key==="ArrowLeft")inp.left=false;if(e.key==="ArrowRight")inp.right=false;
+  if(e.key==="a"||e.key==="A")inp.A=false;if(e.key==="b"||e.key==="B")inp.B=false;
+  if(e.key===" "||e.key==="Enter")inp.start=false;
+});
+
+// Game state
+var STAGES=["BOOT","INTRO","BATTLE70","DISCO70","QUIZ80","REAK90","CODE","FINAL"];
+var game={stage:"BOOT",stageIdx:0,score:0,stageTime:0,totalTime:0,finished:false,digits:["7","0","8","9"]};
+function addScore(n){game.score+=n;hudP.textContent="*"+(""+Math.max(0,game.score)).padStart(4,"0");if(n>0)blip();}
+function hint(t){hintBar.textContent=t;}
+function rnd(a,b){return Math.floor(Math.random()*(b-a+1))+a;}
+function fmtTime(s){return (""+Math.floor(s/60)).padStart(2,"0")+":"+(""+Math.floor(s%60)).padStart(2,"0");}
+function setHTML(h){ga.innerHTML=h;}
+
+function nextStage(){
+  game.stageIdx=Math.min(game.stageIdx+1,STAGES.length-1);
+  game.stage=STAGES[game.stageIdx];
+  game.stageTime=0;
+  var lbl={BOOT:"BOOT",INTRO:"INTRO",BATTLE70:"70er",QUIZ80:"80er",REAK90:"90er",SORT:"SORT",CODE:"CODE",FINAL:"FINAL"};
+  hudS.textContent=lbl[game.stage]||game.stage;
+  initStage(game.stage);fanfare();
+}
+
+// ===================== BOOT =====================
+function initBoot(){
+  hint("START druecken!");
+  setHTML('<div class="gb-center" style="padding:10px 0">'
+    +'<div class="gb-text gb-text-lg" style="margin:8px 0">&#9679; GAME BOY</div>'
+    +'<div class="gb-text gb-text-md" style="margin:4px 0">SOMMERDUELL</div>'
+    +'<div class="gb-text gb-text-md" style="margin:2px 0">DER PAARE</div>'
+    +'<div class="gb-box-dim" style="margin:12px 4px">'
+    +'<div class="gb-text gb-text-sm gb-text-dim">TIME WARP</div>'
+    +'<div class="gb-text gb-text-sm gb-text-dim">EDITION 2026</div>'
+    +'</div>'
+    +'<div class="gb-text gb-text-sm gb-blink" style="margin-top:16px">PRESS  START</div>'
+    +'<div class="gb-text gb-text-sm gb-text-dim" style="margin-top:20px;font-size:7px">(c) KRUEGER WORKS</div>'
+    +'</div>');
+}
+function updateBoot(dt){
+  if(inp.start&&!prev.start){startSnd();nextStage();}
+}
+
+// ===================== INTRO =====================
+var introP=0,introCool=0;
+var introPages=[
+  {t:"** ZEITALARM **",lines:["","Die Jahrzehnte","70er 80er 90er","sind DURCH-","EINANDER geraten!"]},
+  {t:"DEINE MISSION",lines:["","Loese 4 Raetsel.","Jede Stage","gibt dir","eine geheime Ziffer."]},
+  {t:"AM ENDE...",lines:["","...knackst du den","ZEITCODE und","bekommst die","EINLADUNG! Viel Glueck!"]},
+];
+function initIntro(){introP=0;introCool=0.4;renderIntro();hint("A = Weiter");}
+function renderIntro(){
+  var p=introPages[introP];
+  var h='<div style="padding:6px">'
+    +'<div class="gb-box" style="margin-bottom:8px">'
+    +'<div class="gb-text gb-text-md">'+p.t+'</div>'
+    +'</div>';
+  p.lines.forEach(function(l){
+    h+='<div class="gb-text gb-text-sm gb-text-dim" style="margin:3px 0">'+l+'</div>';
+  });
+  h+='<div class="gb-text gb-text-sm gb-text-dim" style="margin-top:8px;text-align:right">['+(introP+1)+'/'+introPages.length+']</div>';
+  h+='</div>';
+  setHTML(h);
+}
+function updateIntro(dt){
+  introCool-=dt;if(introCool>0)return;
+  if(inp.A&&!prev.A){boop();introP++;if(introP>=introPages.length){nextStage();return;}introCool=0.3;renderIntro();}
+}
+
+// ===================== BATTLE 70er =====================
+var bt={pHP:30,pMax:30,eHP:30,eMax:30,state:"MENU",sel:0,msg:"",msgT:0};
+var moves=[
+  {n:"DISCO-BLITZ",dmg:[8,13],pp:5,max:5},
+  {n:"PEACE-STRAHL",dmg:[5,10],pp:6,max:6},
+  {n:"SCHLAG-KICK",dmg:[10,16],pp:3,max:3},
+  {n:"LAVA-WELLE",dmg:[4,7],pp:8,max:8},
+];
+var eMoves=[{n:"WIFI-BLAST",dmg:[5,10]},{n:"SELFIE-HIT",dmg:[4,8]},{n:"TIKTOK-WELLE",dmg:[7,12]},{n:"STREAM-SCHOCK",dmg:[3,7]}];
+
+function animMon(id, cls, duration){
+  var el=document.getElementById(id);
+  if(!el)return;
+  el.classList.remove('mon-attack-r','mon-attack-l','mon-hit','mon-knockback','mon-knockback-r','mon-faint','mon-victory');
+  void el.offsetWidth; // force reflow
+  el.classList.add(cls);
+  setTimeout(function(){if(el)el.classList.remove(cls);},duration||500);
+}
+
+function initBATTLE(){
+  bt.pHP=30;bt.pMax=30;bt.eHP=30;bt.eMax=30;bt.state="MENU";bt.sel=0;bt.msg="";bt.msgT=0;
+  moves.forEach(function(m){m.pp=m.max;});
+  renderBATTLE();hint("Hoch/Runter=Angriff auswaehlen  A=Angreifen");
+}
+function hpPct(hp,mx){return Math.max(0,Math.round(hp/mx*100));}
+var DISCOMON_SVG = null;
+var ZEITMON_SVG = null;
+function getSVG(){
+  if(!DISCOMON_SVG) DISCOMON_SVG = document.getElementById('svgDiscomon').innerHTML;
+  if(!ZEITMON_SVG)  ZEITMON_SVG  = document.getElementById('svgZeitmon').innerHTML;
+}
+
+function renderBATTLE(){
+  getSVG();
+  if(bt.state==="DIGIT"){
+    setHTML('<div class="gb-center gb-text" style="padding:12px">'
+      +'<div class="gb-text-md" style="margin-bottom:6px">ZEITMON besiegt!</div>'
+      +'<div class="gb-box" style="padding:14px;margin:4px">'
+      +'<div class="gb-text-sm gb-text-dim">Du hast gefunden:</div>'
+      +'<div class="gb-text-xl" style="margin-top:8px;letter-spacing:6px">ZIFFER  7</div>'
+      +'</div>'
+      +'<div class="gb-text-sm gb-text-dim" style="margin-top:8px">+500 Punkte!</div>'
+      +'<div class="gb-text-sm gb-blink" style="margin-top:10px">A druecken!</div>'
+      +'</div>');
+    return;
+  }
+  var h='<div style="padding:6px">';
+  // Enemy top-right
+  h+='<div style="display:flex;justify-content:space-between;align-items:flex-start">'
+    +'<div style="flex:1">'
+    +'<div class="gb-text gb-text-sm">ZEITMON <span class="gb-text-dim">Lv.5</span></div>'
+    +'<div style="display:flex;align-items:center;gap:4px;margin:2px 0">'
+    +'<span class="gb-text gb-text-sm gb-text-dim">HP</span>'
+    +'<div class="hp-wrap" style="width:70px"><div class="hp-fill" style="width:'+hpPct(bt.eHP,bt.eMax)+'%"></div></div>'
+    +'<span class="gb-text gb-text-sm gb-text-dim">'+bt.eHP+'</span>'
+    +'</div></div>'
+    +'<div id="monE" style="line-height:0;display:inline-block">'+ZEITMON_SVG+'</div>'
+    +'</div>';
+
+  // Player bottom-left
+  h+='<div style="border-top:1px solid #306230;margin:6px 0;padding-top:6px;display:flex;justify-content:space-between;align-items:flex-start">'
+    +'<div id="monP" style="line-height:0;display:inline-block">'+DISCOMON_SVG+'</div>'
+    +'<div style="text-align:right">'
+    +'<div class="gb-text gb-text-sm">DISCOMON <span class="gb-text-dim">Lv.10</span></div>'
+    +'<div style="display:flex;align-items:center;gap:4px;margin:2px 0;justify-content:flex-end">'
+    +'<span class="gb-text gb-text-sm gb-text-dim">HP</span>'
+    +'<div class="hp-wrap" style="width:70px"><div class="hp-fill" style="width:'+hpPct(bt.pHP,bt.pMax)+'%"></div></div>'
+    +'</div>'
+    +'<div class="gb-text gb-text-sm gb-text-dim">'+bt.pHP+'/'+bt.pMax+'</div>'
+    +'</div></div>';
+
+  // Message or menu
+  h+='<div style="border-top:1px solid #0F380F;margin-top:4px;padding-top:4px">';
+  if(bt.state==="DIGIT"){
+    // Full screen digit reveal - rendered separately below
+  } else if(bt.state==="MSG"||bt.state==="WIN"||bt.state==="LOSE"){
+    h+='<div class="gb-text gb-text-sm" style="min-height:40px">'+bt.msg.replace(/\n/g,'<br>')+'</div>';
+  } else {
+    h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:3px">';
+    moves.forEach(function(m,i){
+      if(i===bt.sel){
+        h+='<div class="gb-selected gb-text gb-text-sm">'+m.n+'<br><span style="font-size:6px">PP:'+m.pp+'</span></div>';
+      } else {
+        h+='<div class="gb-unsel gb-text gb-text-sm" style="color:'+(m.pp>0?'#306230':'#8BAC0F')+'">'+m.n+'<br><span style="font-size:6px">PP:'+m.pp+'</span></div>';
+      }
+    });
+    h+='</div>';
+  }
+  h+='</div></div>';
+  setHTML(h);
+}
+
+function updateBATTLE(dt){
+  if(bt.state==="MSG"){
+    bt.msgT-=dt;
+    if(bt.msgT<=0){
+      if(bt.eHP<=0){
+        bt.state="DIGIT";
+        addScore(500);renderBATTLE();
+        setTimeout(function(){animMon('monP','mon-victory',1000);},300);
+      } else if(bt.pHP<=0){
+        bt.state="LOSE";bt.msg="DISCOMON k.o.!\nNochmal!";renderBATTLE();
+        setTimeout(function(){bt.pHP=30;bt.eHP=30;bt.state="MENU";renderBATTLE();hint("Nochmal! A=Angreifen");},2500);
+      } else {
+        bt.state="MENU";renderBATTLE();
+      }
+    }
+    return;
+  }
+  if(bt.state==="DIGIT"){
+    if(inp.A&&!prev.A){fanfare();nextStage();}
+    return;
+  }
+  if(bt.state==="MENU"){
+    if(inp.up&&!prev.up){bt.sel=Math.max(0,bt.sel-1);boop();renderBATTLE();}
+    if(inp.down&&!prev.down){bt.sel=Math.min(3,bt.sel+1);boop();renderBATTLE();}
+    if(inp.A&&!prev.A){
+      var mv=moves[bt.sel];
+      if(mv.pp<=0){bonk();bt.msg="Keine PP mehr!";bt.msgT=1;bt.state="MSG";renderBATTLE();return;}
+      mv.pp--;
+      var pdmg=rnd(mv.dmg[0],mv.dmg[1]);
+      bt.eHP=Math.max(0,bt.eHP-pdmg);
+      beep(660,.04);setTimeout(function(){beep(440,.04);},60);
+      // Player attacks
+      animMon('monP','mon-attack-r',350);
+      setTimeout(function(){animMon('monE', bt.eHP<=0?'mon-faint':'mon-hit',bt.eHP<=0?700:400);},280);
+      if(bt.eHP<=0){bt.msg=mv.n+" trifft!\n-"+pdmg+"HP\nZEITMON besiegt!";bt.msgT=2;bt.state="MSG";renderBATTLE();return;}
+      var em=eMoves[rnd(0,eMoves.length-1)];
+      var edmg=rnd(em.dmg[0],em.dmg[1]);
+      bt.pHP=Math.max(0,bt.pHP-edmg);bonk();
+      // Enemy counter-attacks
+      setTimeout(function(){
+        animMon('monE','mon-attack-l',350);
+        setTimeout(function(){animMon('monP', bt.pHP<=0?'mon-faint':'mon-knockback-r', bt.pHP<=0?700:400);},280);
+      },500);
+      if(bt.pHP<=0){bt.msg=mv.n+"!\n-"+pdmg+"HP\nFeind: "+em.n+"\n-"+edmg+"HP\nDISCOMON k.o.!";bt.msgT=2.5;bt.state="MSG";renderBATTLE();return;}
+      bt.msg=mv.n+"!\n-"+pdmg+"HP\nFeind: "+em.n+"\n-"+edmg+"HP";bt.msgT=1.8;bt.state="MSG";renderBATTLE();
+    }
+  }
+  if(game.stageTime>200)nextStage();
+}
+
+
+// ===================== DISCO-TANZ 70er =====================
+var dArrows  = ['up','down','left','right'];
+var dLabels  = {up:'&#9650;', down:'&#9660;', left:'&#9664;', right:'&#9654;'};
+var dNames   = {up:'HOCH', down:'RUNTER', left:'LINKS', right:'RECHTS'};
+var dState   = 'INTRO'; // INTRO, SHOW, INPUT, WIN, DIGIT
+var dSeq     = [];       // full growing sequence
+var dShowing = 0;        // index currently being shown during SHOW phase
+var dShowT   = 0;        // timer for current arrow display
+var dInput   = 0;        // how many inputs confirmed so far
+var dRound   = 0;        // current round (seq length = round+2, starts at 2)
+var dMistakes= 0;
+var dMaxMist = 3;
+var dWinRounds = 5;      // need to complete 5 rounds to win
+var dMsg     = '';
+var dMsgT    = 0;
+var dCool    = 0;
+
+function dAddStep(){
+  dSeq.push(dArrows[Math.floor(Math.random()*4)]);
+}
+
+function initDISCO(){
+  dState='INTRO'; dSeq=[]; dShowing=0; dShowT=0;
+  dInput=0; dRound=0; dMistakes=0; dMsg=''; dMsgT=0; dCool=0.3;
+  renderDISCO();
+  hint("A druecken zum Starten!");
+}
+
+function renderDISCO(){
+  if(dState==='INTRO'){
+    setHTML('<div style="padding:8px">'
+      +'<div class="gb-box" style="margin-bottom:8px"><div class="gb-text gb-text-md">&#127915; DISCO-TANZ &#127915;</div></div>'
+      +'<div class="gb-text gb-text-sm" style="margin:3px 0">Schau dir die</div>'
+      +'<div class="gb-text gb-text-sm" style="margin:3px 0">Tanzschritte an...</div>'
+      +'<div class="gb-text gb-text-sm" style="margin:6px 0 3px">...und tippe sie nach!</div>'
+      +'<div class="gb-text gb-text-sm" style="margin:3px 0">Die Sequenz wird</div>'
+      +'<div class="gb-text gb-text-sm" style="margin:3px 0">jede Runde laenger.</div>'
+      +'<div class="gb-selected gb-text gb-text-sm" style="margin:8px 0;padding:5px;text-align:center">Ziel: '+dWinRounds+' Runden!</div>'
+      +'<div class="gb-text gb-text-sm gb-blink" style="margin-top:8px;text-align:center">A druecken!</div>'
+      +'</div>');
+    return;
+  }
+  if(dState==='DIGIT'){
+    setHTML('<div class="gb-center gb-text" style="padding:12px">'
+      +'<div class="gb-text-md" style="margin-bottom:6px">DISCO-STAR! &#127915;</div>'
+      +'<div class="gb-box" style="padding:14px;margin:4px">'
+      +'<div class="gb-text-sm gb-text-dim">Du hast gefunden:</div>'
+      +'<div class="gb-text-xl" style="margin-top:8px;letter-spacing:6px">ZIFFER  0</div>'
+      +'</div>'
+      +'<div class="gb-text-sm gb-text-dim" style="margin-top:8px">+500 Punkte!</div>'
+      +'<div class="gb-text-sm gb-blink" style="margin-top:10px">A druecken!</div>'
+      +'</div>');
+    return;
+  }
+
+  var h='<div style="padding:6px">';
+
+  // Progress bar
+  h+='<div class="gb-row" style="margin-bottom:6px">'
+    +'<div class="gb-text gb-text-sm">Runde: '+dRound+'/'+dWinRounds+'</div>'
+    +'<div class="gb-text gb-text-sm gb-text-dim">Fehler: '+dMistakes+'/'+dMaxMist+'</div>'
+    +'</div>';
+
+  if(dState==='SHOW'){
+    // Show current arrow big and blinking
+    var arrow = dSeq[dShowing];
+    h+='<div class="gb-center" style="padding:10px 0">';
+    h+='<div class="gb-text gb-text-sm gb-text-dim" style="margin-bottom:8px">SCHAU ZU...</div>';
+    h+='<div class="gb-text" style="font-size:52px;line-height:1">'+dLabels[arrow]+'</div>';
+    h+='<div class="gb-text gb-text-sm" style="margin-top:8px">'+dNames[arrow]+'</div>';
+    h+='<div class="gb-text gb-text-sm gb-text-dim" style="margin-top:4px">'+(dShowing+1)+' / '+dSeq.length+'</div>';
+    h+='</div>';
+  } else if(dState==='INPUT'){
+    // Show sequence so far as small arrows, highlight next to input
+    h+='<div class="gb-center" style="margin-bottom:8px">';
+    h+='<div class="gb-text gb-text-sm gb-text-dim" style="margin-bottom:6px">JETZT DU!</div>';
+    // Show sequence dots: done=filled, current=big, remaining=dim
+    h+='<div style="display:flex;gap:4px;justify-content:center;flex-wrap:wrap;margin-bottom:10px">';
+    for(var i=0;i<dSeq.length;i++){
+      if(i<dInput){
+        h+='<div class="gb-text" style="font-size:16px;color:#0F380F">'+dLabels[dSeq[i]]+'</div>';
+      } else if(i===dInput){
+        h+='<div class="gb-text gb-blink" style="font-size:28px;color:#0F380F">?</div>';
+      } else {
+        h+='<div class="gb-text" style="font-size:16px;color:#8BAC0F">&#9679;</div>';
+      }
+    }
+    h+='</div>';
+    // Button hints
+    h+='<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:3px;max-width:120px;margin:0 auto">';
+    h+='<div></div>';
+    h+='<div class="gb-box-dim" style="text-align:center;padding:4px"><div class="gb-text" style="font-size:16px">'+dLabels.up+'</div></div>';
+    h+='<div></div>';
+    h+='<div class="gb-box-dim" style="text-align:center;padding:4px"><div class="gb-text" style="font-size:16px">'+dLabels.left+'</div></div>';
+    h+='<div class="gb-box-dim" style="text-align:center;padding:4px"><div class="gb-text" style="font-size:16px">'+dLabels.down+'</div></div>';
+    h+='<div class="gb-box-dim" style="text-align:center;padding:4px"><div class="gb-text" style="font-size:16px">'+dLabels.right+'</div></div>';
+    h+='</div>';
+    h+='</div>';
+  } else if(dState==='MSG'){
+    h+='<div class="gb-center" style="padding:20px 0">';
+    h+='<div class="gb-text gb-text-lg">'+dMsg+'</div>';
+    h+='</div>';
+  }
+
+  h+='</div>';
+  setHTML(h);
+}
+
+function dStartRound(){
+  // First round starts with 3 steps
+  if(dSeq.length===0){ dAddStep(); dAddStep(); dAddStep(); } else { dAddStep(); }
+  dShowing=0; dInput=0;
+  dShowT=0.5; // brief pause before first arrow
+  dState='SHOW';
+  hint("Schau dir die Schritte an...");
+  renderDISCO();
+}
+
+function updateDISCO(dt){
+  dCool-=dt; dMsgT-=dt;
+
+  if(dState==='INTRO'){
+    if(inp.A&&!prev.A){ boop(); dRound=0; dSeq=[]; dStartRound(); }
+    return;
+  }
+  if(dState==='DIGIT'){
+    if(inp.A&&!prev.A){ fanfare(); nextStage(); }
+    return;
+  }
+  if(dState==='MSG'){
+    if(dMsgT<=0){
+      if(dMistakes>=dMaxMist){
+        // reset round (not whole game)
+        dSeq=[]; dRound=0; dMistakes=0;
+        dState='INTRO';
+        hint("Nochmal! A druecken!");
+        renderDISCO();
+      } else {
+        dStartRound();
+      }
+    }
+    return;
+  }
+
+  if(dState==='SHOW'){
+    dShowT-=dt;
+    if(dShowT<=0){
+      dShowing++;
+      if(dShowing>=dSeq.length){
+        // Done showing - player's turn
+        dState='INPUT';
+        hint("Deine Runde! Pfeil-Tasten druecken!");
+        renderDISCO();
+      } else {
+        dShowT=0.65;
+        renderDISCO();
+      }
+    }
+    return;
+  }
+
+  if(dState==='INPUT'){
+    if(dCool>0) return;
+    var pressed=null;
+    if(inp.up&&!prev.up)   pressed='up';
+    if(inp.down&&!prev.down) pressed='down';
+    if(inp.left&&!prev.left) pressed='left';
+    if(inp.right&&!prev.right) pressed='right';
+    if(pressed===null) return;
+    dCool=0.15;
+
+    if(pressed===dSeq[dInput]){
+      beep(660+dInput*40, 0.05);
+      dInput++;
+      renderDISCO();
+      if(dInput>=dSeq.length){
+        // Round complete!
+        dRound++;
+        addScore(150*dRound);
+        if(dRound>=dWinRounds){
+          // WON!
+          addScore(500);
+          dState='DIGIT';
+          renderDISCO();
+          fanfare();
+        } else {
+          dMsg='SUPER! &#9733;';
+          dMsgT=1.0;
+          dState='MSG';
+          hint("Runde "+(dRound)+"/"+dWinRounds+" geschafft!");
+          renderDISCO();
+        }
+      }
+    } else {
+      // Wrong!
+      bonk();
+      dMistakes++;
+      if(dMistakes>=dMaxMist){
+        dMsg='FALSCH! &#10006;';
+        dMsgT=1.5;
+        dState='MSG';
+        hint("3 Fehler! Von vorne!");
+        renderDISCO();
+      } else {
+        dMsg='FALSCH!';
+        dMsgT=0.8;
+        dState='MSG';
+        hint("Fehler "+(dMistakes)+"/"+dMaxMist+"!");
+        renderDISCO();
+      }
+    }
+  }
+  if(game.stageTime>300) nextStage();
+}
+
+// ===================== QUIZ 80er =====================
+// Quiz questions - big pool covering 70s/80s/90s
+var qsPool=[
+  // 70er
+  {q:"70er MUSIK:\nWelche Band sang\n'Stayin Alive'?",a:["BEE GEES","ABBA","QUEEN"],correct:"BEE GEES"},
+  {q:"70er FILM:\nIn welchem Film\ngreift ein Hai an?",a:["JAWS","ALIEN","ROCKY"],correct:"JAWS"},
+  {q:"70er MODE:\nWelcher Hosen-\nschnitt war typisch?",a:["SCHLAGHOSE","SKINNY JEANS","SHORTS"],correct:"SCHLAGHOSE"},
+  {q:"70er MUSIK:\nWelche schwedische\nBand wurde 1972 bekannt?",a:["ABBA","ROXETTE","EUROPE"],correct:"ABBA"},
+  {q:"70er SPORT:\nWer gewann\ndie WM 1974?",a:["DEUTSCHLAND","BRASILIEN","ITALIEN"],correct:"DEUTSCHLAND"},
+  {q:"70er TV:\nWie hiess der\nDisco-Detektiv?",a:["STARSKY & HUTCH","DERRICK","COLUMBO"],correct:"STARSKY & HUTCH"},
+  {q:"70er KULT:\nWas war 1977\nein riesiger Kinoerfolg?",a:["STAR WARS","E.T.","INDIANA JONES"],correct:"STAR WARS"},
+  {q:"70er TECH:\nWas erfand\nAtari 1972?",a:["PONG","PACMAN","TETRIS"],correct:"PONG"},
+  {q:"70er MUSIK:\nWer sang\n'Bohemian Rhapsody'?",a:["QUEEN","LED ZEPPELIN","THE WHO"],correct:"QUEEN"},
+  {q:"70er KULT:\nWelches Spiel wurde\n1974 erfunden?",a:["RUBIKS CUBE","JENGA","TRIVIAL PURSUIT"],correct:"RUBIKS CUBE"},
+  // 80er
+  {q:"80er FILM:\nWer jagt Geister in\nNew York?",a:["GHOSTBUSTERS","X-FILES","BATMAN"],correct:"GHOSTBUSTERS"},
+  {q:"80er MUSIK:\nWer sang\n'Like a Virgin'?",a:["MADONNA","CYNDI LAUPER","TINA TURNER"],correct:"MADONNA"},
+  {q:"80er MODE:\nWas war IN\nder Mode?",a:["SCHULTERPOLSTER","JOGGER","HOODIE"],correct:"SCHULTERPOLSTER"},
+  {q:"80er SPORT:\nWer gewann\ndie WM 1986?",a:["ARGENTINIEN","BRASILIEN","DEUTSCHLAND"],correct:"ARGENTINIEN"},
+  {q:"80er TECH:\nWas erfand Apple\nim Jahr 1984?",a:["MACINTOSH","IPHONE","IPAD"],correct:"MACINTOSH"},
+  {q:"80er GAME:\nWie heisst der\noriginal Gameboy?",a:["DMG-01","NES","ATARI 2600"],correct:"DMG-01"},
+  {q:"80er TV:\nIn welchem Staat\njagt Magnum?",a:["HAWAII","MIAMI","LAS VEGAS"],correct:"HAWAII"},
+  {q:"80er KULT:\nDeLorean ist aus\nwelchem Film?",a:["BACK TO THE FUTURE","TERMINATOR","ROBOCOP"],correct:"BACK TO THE FUTURE"},
+  {q:"80er MUSIK:\nWer sang\n'Thriller' (1982)?",a:["MICHAEL JACKSON","PRINCE","DAVID BOWIE"],correct:"MICHAEL JACKSON"},
+  {q:"80er FILM:\nWer spielt\nRambo?",a:["SYLVESTER STALLONE","ARNOLD SCHWARZENEGGER","BRUCE WILLIS"],correct:"SYLVESTER STALLONE"},
+  // 90er
+  {q:"90er MUSIK:\nWelche Girl-Group\nsang 'Wannabe'?",a:["SPICE GIRLS","DESTINY'S CHILD","TLC"],correct:"SPICE GIRLS"},
+  {q:"90er FILM:\nWie heisst der\nLoewe in Koenig der Loewen?",a:["SIMBA","NALA","PUMBA"],correct:"SIMBA"},
+  {q:"90er GAME:\nWelches Spiel gabs\nnur auf Gameboy?",a:["POKEMON","MARIO 64","SONIC"],correct:"POKEMON"},
+  {q:"90er TECH:\nWas war ICQ?",a:["CHAT-PROGRAMM","SUCHMASCHINE","VIDEOSPIEL"],correct:"CHAT-PROGRAMM"},
+  {q:"90er KULT:\nWelcher Tanz war\nin den 90ern ein Hit?",a:["MACARENA","MOONWALK","CHARLESTON"],correct:"MACARENA"},
+  {q:"90er MUSIK:\nWer sang\n'Baby One More Time'?",a:["BRITNEY SPEARS","CHRISTINA AGUILERA","JENNIFER LOPEZ"],correct:"BRITNEY SPEARS"},
+  {q:"90er SPORT:\nWer gewann\ndie WM 1990?",a:["DEUTSCHLAND","ARGENTINIEN","BRASILIEN"],correct:"DEUTSCHLAND"},
+  {q:"90er TV:\nWie hieß die Serie\nueber Rettungsschwimmer?",a:["BAYWATCH","AKTE X","FRIENDS"],correct:"BAYWATCH"},
+  {q:"90er FILM:\nWoher kommt\nForrest Gump?",a:["ALABAMA","TEXAS","GEORGIA"],correct:"ALABAMA"},
+  {q:"90er KULT:\nWie hiess der\nBegleiter von Woody?",a:["BUZZ LIGHTYEAR","PUMBA","PIKACHU"],correct:"BUZZ LIGHTYEAR"},
+];
+function shuffleArr(a){return a.slice().sort(function(){return Math.random()-.5;});}
+function shuffleAnswers(q){
+  var shuffled=shuffleArr(q.a);
+  return {q:q.q, a:shuffled, c:shuffled.indexOf(q.correct), correct:q.correct};
+}
+function pickQuestions(){
+  return shuffleArr(qsPool).slice(0,10).map(shuffleAnswers);
+}
+var qs=[], qI=0, qSel=0, qCool=0, qCorrect=0, qShowDigit=false, qShowIntro=true;
+var Q_TOTAL=10, Q_PASS=8;
+function initQUIZ(){
+  qs=pickQuestions();
+  qI=0;qSel=0;qCool=0.5;qCorrect=0;qShowDigit=false;qShowIntro=true;
+  renderQUIZ();hint("A druecken zum Starten!");
+}
+function renderQUIZ(){
+  if(qShowIntro){
+    setHTML('<div style="padding:8px">'
+      +'<div class="gb-box" style="margin-bottom:8px"><div class="gb-text gb-text-md">ZEITREISE-QUIZ</div></div>'
+      +'<div class="gb-text gb-text-sm" style="margin:3px 0">10 Fragen aus den</div>'
+      +'<div class="gb-text gb-text-sm" style="margin:3px 0">70ern, 80ern & 90ern.</div>'
+      +'<div class="gb-text gb-text-sm" style="margin:6px 0 3px">Hoch / Runter = Antwort</div>'
+      +'<div class="gb-text gb-text-sm" style="margin:3px 0">A = Bestaetigen</div>'
+      +'<div class="gb-selected gb-text gb-text-sm" style="margin:8px 0;padding:5px;text-align:center">Ziel: '+Q_PASS+' von '+Q_TOTAL+' richtig!</div>'
+      +'<div class="gb-text gb-text-sm gb-blink" style="margin-top:8px;text-align:center">A druecken zum Starten!</div>'
+      +'</div>');
+    return;
+  }
+  if(qShowDigit){setHTML('<div class="gb-center gb-text" style="padding:12px"><div class="gb-text-md" style="margin-bottom:6px">QUIZ GESCHAFFT!</div><div class="gb-box" style="padding:12px;margin:4px"><div class="gb-text-sm gb-text-dim">Du hast gefunden:</div><div class="gb-text-xl" style="margin-top:8px;letter-spacing:6px">ZIFFER  8</div></div><div class="gb-text-sm gb-text-dim" style="margin-top:6px">'+qCorrect+'/'+Q_TOTAL+' richtig</div><div class="gb-text-sm gb-blink" style="margin-top:8px">A druecken!</div></div>');return;}
+  if(qI>=qs.length){return;}
+  var q=qs[qI];
+  var h='<div style="padding:6px">'
+    +'<div class="gb-box" style="margin-bottom:6px">'
+    +'<div class="gb-text gb-text-sm gb-text-dim" style="margin-bottom:2px">F.'+(qI+1)+'/'+Q_TOTAL+' &nbsp; Ziel: '+Q_PASS+'/'+Q_TOTAL+'</div>'
+    +'<div class="gb-text gb-text-sm">'+q.q.replace(/\n/g,'<br>')+'</div>'
+    +'</div>';
+  q.a.forEach(function(ans,i){
+    if(i===qSel){h+='<div class="gb-selected gb-text gb-text-sm" style="margin:2px 0">&gt; '+ans+'</div>';}
+    else{h+='<div class="gb-unsel gb-text gb-text-sm" style="margin:2px 0;color:#306230">  '+ans+'</div>';}
+  });
+  h+='</div>';
+  setHTML(h);
+}
+function updateQUIZ(dt){
+  qCool-=dt;if(qCool>0)return;
+  if(qShowIntro){
+    if(inp.A&&!prev.A){boop();qShowIntro=false;qCool=0.4;hint("Hoch/Runter=Auswaehlen  A=Bestaetigen");renderQUIZ();}
+    return;
+  }
+  // Digit screen - wait for A
+  if(qShowDigit){
+    if(inp.A&&!prev.A){fanfare();nextStage();}
+    return;
+  }
+  if(qI>=qs.length){return;}
+  if(inp.up&&!prev.up){qSel=Math.max(0,qSel-1);boop();qCool=0.15;renderQUIZ();}
+  if(inp.down&&!prev.down){qSel=Math.min(2,qSel+1);boop();qCool=0.15;renderQUIZ();}
+  if(inp.A&&!prev.A){
+    qCool=0.6;var q=qs[qI];
+    if(qSel===q.c){qCorrect++;addScore(200);beep(660,.05);setTimeout(function(){beep(880,.06);},60);hint("RICHTIG! +200 Punkte!");}
+    else{bonk();hint("Falsch! Richtig: "+q.a[q.c]);}
+    qI++;qSel=0;
+    if(qI>=qs.length){
+      qCool=0.3;
+      if(qCorrect<Q_PASS){
+        // Not enough - reshuffle and retry
+        hint("Nur "+qCorrect+"/"+Q_TOTAL+" richtig! Du brauchst "+Q_PASS+"! Nochmal!");
+        setTimeout(function(){
+          qs=pickQuestions();
+          qI=0;qSel=0;qCorrect=0;qCool=0.5;renderQUIZ();
+        },2000);
+      } else {
+        qShowDigit=true;qCool=0.4;renderQUIZ();hint("Super! A druecken um weiter zu machen!");
+      }
+      return;
+    }
+    renderQUIZ();
+  }
+  if(game.stageTime>300)nextStage();
+}
+
+// ===================== REAKTION 90er =====================
+var rAll=[
+  {l:"TAMAGOTCHI",ok:true},{l:"CD-ROM",ok:true},{l:"SPICE GIRLS",ok:true},
+  {l:"VOKUHILA",ok:true},{l:"BACKSTREET BOYS",ok:true},{l:"GAMEBOY COLOR",ok:true},
+  {l:"INTERNET",ok:true},{l:"NOKIA 3310",ok:true},{l:"ICQ",ok:true},
+  {l:"TIKTOK",ok:false},{l:"YOUTUBE",ok:false},{l:"IPHONE",ok:false},
+  {l:"CORONA",ok:false},{l:"NETFLIX",ok:false},{l:"BITCOIN",ok:false},
+  {l:"INSTAGRAM",ok:false},{l:"AIRPODS",ok:false},{l:"ZOOM",ok:false},
+];
+var rPool=[],rCur=null,rTimer=0,rState="INTRO",rHits=0,rMiss=0,rTarget=8,rLock=false,rRound=0;
+function initREAK(){
+  rPool=rAll.slice().sort(function(){return Math.random()-.5;});
+  rCur=null;rTimer=1.0;rState="INTRO";rHits=0;rMiss=0;rRound=0;rLock=false;
+  renderREAK();hint("A druecken zum Starten!");
+}
+function renderREAK(){
+  if(rState==="INTRO"){
+    setHTML('<div style="padding:8px">'
+      +'<div class="gb-box" style="margin-bottom:8px"><div class="gb-text gb-text-md">REAKTIONS-TEST</div></div>'
+      +'<div class="gb-text gb-text-sm" style="margin:4px 0">Gleich erscheinen Begriffe.</div>'
+      +'<div class="gb-text gb-text-sm" style="margin:4px 0">Ist es ein <b>90er Begriff</b>?</div>'
+      +'<div class="gb-selected gb-text gb-text-sm" style="margin:6px 0;padding:5px">&#9658; A DRUECKEN!</div>'
+      +'<div class="gb-text gb-text-sm" style="margin:4px 0">Ist es KEIN 90er?</div>'
+      +'<div class="gb-box-dim gb-text gb-text-sm" style="margin:4px 0;padding:5px;color:#306230">Nichts druecken!</div>'
+      +'<div class="gb-text gb-text-sm gb-text-dim" style="margin-top:8px">Ziel: '+rTarget+' richtige Treffer</div>'
+      +'<div class="gb-text gb-text-sm gb-blink" style="margin-top:10px">A druecken zum Starten!</div>'
+      +'</div>');
+    return;
+  }
+  var h='<div style="padding:6px">'
+    +'<div class="gb-row">'
+    +'<div class="gb-text gb-text-sm">TREFFER: <b>'+rHits+'/'+rTarget+'</b></div>'
+    +'<div class="gb-text gb-text-sm gb-text-dim">FEHLER: '+rMiss+'</div>'
+    +'</div>'
+    +'<div style="border-top:1px solid #306230;margin:6px 0;"></div>';
+  if(rState==="SHOW"&&rCur){
+    h+='<div class="gb-box" style="text-align:center;padding:12px 6px;margin:4px 0">'
+      +'<div class="gb-text gb-text-lg">'+rCur.l+'</div>'
+      +'</div>';
+    // No hint shown - player must remember the rules
+  } else {
+    h+='<div class="gb-center" style="padding:20px 0">'
+      +'<div class="gb-text gb-text-xl gb-blink">. . .</div>'
+      +'<div class="gb-text gb-text-sm gb-text-dim" style="margin-top:8px">Gleich erscheint<br>ein Begriff!</div>'
+      +'</div>';
+  }
+  h+='</div>';
+  setHTML(h);
+}
+function updateREAK(dt){
+  rTimer-=dt;
+  if(rState==="INTRO"){
+    if(inp.A&&!prev.A){
+      boop();rState="WAIT";rTimer=1.0;
+      hint("90er Begriff? A druecken! Kein 90er? Warten!");
+      renderREAK();
+    }
+    return;
+  }
+  if(rState==="DIGIT"){
+    if(inp.A&&!prev.A){fanfare();nextStage();}
+    return;
+  }
+  if(rState==="WAIT"){
+    if(rTimer<=0){rCur=rPool[rRound%rPool.length];rRound++;rTimer=1.3;rState="SHOW";rLock=false;beep(520,.04);renderREAK();}
+  } else if(rState==="SHOW"){
+    if(!rLock&&inp.A&&!prev.A){
+      rLock=true;
+      if(rCur.ok){rHits++;addScore(100);beep(880,.04);setTimeout(function(){beep(1100,.04);},50);hint("RICHTIG! "+rCur.l+" ist 90er!");}
+      else{rMiss++;bonk();hint("FALSCH! "+rCur.l+" ist NICHT 90er!");}
+      rTimer=0.2;renderREAK();
+    }
+    if(rTimer<=0){
+      if(!rLock&&rCur&&rCur.ok){rMiss++;bonk();hint("ZU LANGSAM! War 90er!");}
+      rState="WAIT";rTimer=0.9;
+      if(rHits>=rTarget){rState="DIGIT";setHTML('<div class="gb-center gb-text" style="padding:12px"><div class="gb-text-md" style="margin-bottom:6px">SUPER!</div><div class="gb-box" style="padding:14px;margin:4px"><div class="gb-text-sm gb-text-dim">Du hast gefunden:</div><div class="gb-text-xl" style="margin-top:8px;letter-spacing:6px">ZIFFER  9</div></div><div class="gb-text-sm gb-text-dim" style="margin-top:8px">Merke dir die 9!</div><div class="gb-text-sm gb-blink" style="margin-top:10px">A druecken!</div></div>');hint("Ziffer 9 gefunden! A druecken!");return;}
+      renderREAK();
+    }
+  }
+  if(game.stageTime>130)nextStage();
+}
+
+// ===================== SORTIEREN =====================
+var sortAll=[
+  {l:"SCHLAGHOSE",d:70},{l:"FLOWER POWER",d:70},
+  {l:"RUBIKS CUBE",d:80},{l:"TETRIS",d:80},
+  {l:"POGS",d:90},{l:"ICQ",d:90},
+];
+var sortList=[],sortCool=0,sortDone=0,sortWaitA=false;
+function initSORT(){
+  sortList=sortAll.map(function(x){return Object.assign({},x,{placed:false});});
+  sortCool=0;sortDone=0;renderSORT();
+  hint("A=70er  B=80er  START=90er");
+}
+function renderSORT(){
+  var cur=null;
+  for(var i=0;i<sortList.length;i++){if(!sortList[i].placed){cur=sortList[i];break;}}
+  var h='<div style="padding:6px">'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;margin-bottom:8px">'
+    +'<div class="gb-box-dim gb-text gb-text-sm gb-center">70er<br><span style="font-size:7px;color:#306230">Taste A</span></div>'
+    +'<div class="gb-box-dim gb-text gb-text-sm gb-center">80er<br><span style="font-size:7px;color:#306230">Taste B</span></div>'
+    +'<div class="gb-box-dim gb-text gb-text-sm gb-center">90er<br><span style="font-size:7px;color:#306230">START</span></div>'
+    +'</div>';
+  if(cur){
+    h+='<div class="gb-box gb-center" style="padding:12px;margin:4px 0">'
+      +'<div class="gb-text gb-text-md">'+cur.l+'</div>'
+      +'<div class="gb-text gb-text-sm gb-text-dim" style="margin-top:4px">Welches Jahrzehnt?</div>'
+      +'</div>';
+  }
+  h+='<div class="gb-text gb-text-sm gb-text-dim" style="margin-top:6px">Sortiert: '+sortDone+'/'+sortAll.length+'</div>';
+  h+='</div>';
+  setHTML(h);
+}
+function updateSORT(dt){
+  if(sortWaitA){
+    if(inp.A&&!prev.A){fanfare();nextStage();}
+    return;
+  }
+  sortCool-=dt;if(sortCool>0)return;
+  var cur=null;for(var i=0;i<sortList.length;i++){if(!sortList[i].placed){cur=sortList[i];break;}}
+  if(!cur){setHTML('<div class="gb-center gb-text" style="padding:12px"><div class="gb-text-md" style="margin-bottom:8px">SORTIERT!</div><div class="gb-box" style="margin:8px 4px;padding:10px"><div class="gb-text-sm gb-text-dim">Du hast gefunden:</div><div class="gb-text-xl" style="margin-top:6px;letter-spacing:4px">ZIFFER  0</div></div><div class="gb-text-sm gb-text-dim">Merke dir die 0!</div></div>');hint("Perfekt! Ziffer 0 gefunden!");setTimeout(nextStage,3000);return;}
+  function check(d){sortCool=0.5;if(cur.d===d){cur.placed=true;sortDone++;addScore(150);beep(660,.05);hint("RICHTIG! "+d+"er!");renderSORT();}else{bonk();addScore(-30);hint("FALSCH! "+cur.l+" ist "+cur.d+"er!");}}
+  if(inp.A&&!prev.A)check(70);
+  else if(inp.B&&!prev.B)check(80);
+  else if(inp.start&&!prev.start)check(90);
+  if(game.stageTime>130)nextStage();
+}
+
+// ===================== CODE =====================
+var cDigits=["0","0","0","0"],cPos=0,cCool=0,cMsg="";
+function initCODE(){cDigits=["0","0","0","0"];cPos=0;cCool=0.5;cMsg="";renderCODE();hint("Hoch/Runter=Zahl  Rechts=weiter  A=Bestaetigen");}
+function renderCODE(){
+  var h='<div style="padding:6px">'
+    +'<div class="gb-text gb-text-sm" style="margin-bottom:6px">Zeitcode eingeben:</div>'
+    +'<div style="display:flex;gap:6px;justify-content:center">';
+  cDigits.forEach(function(d,i){
+    if(i===cPos){h+='<div class="gb-selected gb-text gb-text-xl" style="padding:4px 8px">'+d+'</div>';}
+    else{h+='<div class="gb-box-dim gb-text gb-text-xl" style="padding:4px 8px;text-align:center">'+d+'</div>';}
+  });
+  h+='</div>';
+  if(cMsg){h+='<div class="gb-box" style="margin-top:8px"><div class="gb-text gb-text-sm">'+cMsg+'</div></div>';}
+  else{h+='<div class="gb-text gb-text-sm gb-text-dim" style="margin-top:8px">Hoch/Runter=Zahl<br>Rechts=weiter  A=OK</div>';}
+  h+='</div>';
+  setHTML(h);
+}
+function updateCODE(dt){
+  cCool-=dt;if(cCool>0)return;
+  var cur=parseInt(cDigits[cPos])||0;
+  if(inp.up&&!prev.up){cur=(cur+1)%10;cDigits[cPos]=""+cur;boop();cCool=0.15;renderCODE();}
+  if(inp.down&&!prev.down){cur=(cur+9)%10;cDigits[cPos]=""+cur;boop();cCool=0.15;renderCODE();}
+  if(inp.right&&!prev.right){cPos=Math.min(3,cPos+1);boop();cCool=0.2;renderCODE();}
+  if(inp.left&&!prev.left){cPos=Math.max(0,cPos-1);boop();cCool=0.2;renderCODE();}
+  if(inp.A&&!prev.A){
+    var entered=cDigits.join("");
+    if(entered===game.digits.join("")){addScore(500);fanfare();cMsg="CODE KORREKT! &#127881;";renderCODE();setTimeout(nextStage,2000);}
+    else{bonk();addScore(-50);cMsg="FALSCHER CODE!";cCool=2;renderCODE();}
+  }
+  if(game.stageTime>120)nextStage();
+}
+
+// ===================== FINAL =====================
+function initFINAL(){
+  game.finished=true;
+  var h='<div style="padding:6px">'
+    +'<div class="gb-selected gb-text gb-text-md gb-center" style="margin-bottom:8px;padding:6px">MISSION KOMPLETT! &#127881;</div>'
+    +'<div class="gb-box">'
+    +'<div class="gb-text gb-text-md gb-center">'+INVITE.title1+'</div>'
+    +'<div class="gb-text gb-text-md gb-center">'+INVITE.title2+'</div>'
+    +'<div class="gb-text gb-text-sm gb-text-dim gb-center" style="margin:3px 0">'+INVITE.sub+'</div>'
+    +'<div style="border-top:1px solid #306230;margin:6px 0;"></div>'
+    +'<div class="gb-text gb-text-sm"><b>WANN:</b> '+INVITE.date+'</div>'
+    +'<div class="gb-text gb-text-sm"><b>UM:</b>   '+INVITE.time+'</div>'
+    +'<div class="gb-text gb-text-sm"><b>WO:</b>   '+INVITE.ort1+'</div>'
+    +'<div class="gb-text gb-text-sm">      '+INVITE.ort2+'</div>'
+    
+    +'</div>'
+    +'<div class="gb-selected gb-text gb-text-sm gb-center" style="margin-top:6px;padding:4px">SCORE: '+(""+game.score).padStart(5,"0")+'</div>'
+    +'</div>';
+  setHTML(h);
+  hint("Screenshot machen - ihr seid eingeladen!");
+}
+function updateFINAL(dt){}
+
+// ===================== DISPATCH =====================
+function initStage(s){
+  if(s==="BOOT")initBoot();if(s==="INTRO")initIntro();
+  if(s==="BATTLE70")initBATTLE();if(s==="DISCO70")initDISCO();
+  if(s==="QUIZ80")initQUIZ();
+  if(s==="REAK90")initREAK();
+  if(s==="CODE")initCODE();if(s==="FINAL")initFINAL();
+}
+function updateStage(s,dt){
+  if(s==="BOOT")updateBoot(dt);if(s==="INTRO")updateIntro(dt);
+  if(s==="BATTLE70")updateBATTLE(dt);if(s==="DISCO70")updateDISCO(dt);
+  if(s==="QUIZ80")updateQUIZ(dt);
+  if(s==="REAK90")updateREAK(dt);
+  if(s==="CODE")updateCODE(dt);if(s==="FINAL")updateFINAL(dt);
+}
+
+// ===================== LOOP =====================
+var last=performance.now();
+function loop(now){
+  var dt=Math.min(0.05,(now-last)/1000);last=now;
+  game.stageTime+=dt;game.totalTime+=dt;
+  hudT.textContent=fmtTime(game.totalTime);
+  updateStage(game.stage,dt);
+  prev.A=inp.A;prev.B=inp.B;prev.start=inp.start;
+  prev.up=inp.up;prev.down=inp.down;prev.left=inp.left;prev.right=inp.right;
+  requestAnimationFrame(loop);
+}
+
+initStage("BOOT");
+hudP.textContent="*0000";
+hudT.textContent="00:00";
+requestAnimationFrame(loop);
+</script>
+
+<div id="svgDiscomon" style="display:none"><svg width="70" height="80" viewBox="0 0 130 150">
+  <ellipse cx="65" cy="86" rx="36" ry="38" fill="#00cccc" stroke="#0F380F" stroke-width="2.5"/>
+  <path d="M40,76 L50,68 L65,73 L80,68 L90,76 L87,92 L65,98 L43,92 Z" fill="#00eeee" stroke="#0F380F" stroke-width="1.5"/>
+  <path d="M50,70 L65,75 L80,70" stroke="#ffffff" stroke-width="2" fill="none"/>
+  <circle cx="65" cy="84" r="9" fill="#ff6600" stroke="#0F380F" stroke-width="1.5"/>
+  <circle cx="65" cy="84" r="6" fill="#ffcc00"/>
+  <line x1="65" y1="75" x2="65" y2="93" stroke="#ff6600" stroke-width="1"/>
+  <line x1="56" y1="84" x2="74" y2="84" stroke="#ff6600" stroke-width="1"/>
+  <line x1="59" y1="77" x2="71" y2="91" stroke="#ff6600" stroke-width="1"/>
+  <line x1="71" y1="77" x2="59" y2="91" stroke="#ff6600" stroke-width="1"/>
+  <ellipse cx="34" cy="73" rx="11" ry="8" fill="#00eeee" stroke="#0F380F" stroke-width="1.5" transform="rotate(-20,34,73)"/>
+  <ellipse cx="96" cy="73" rx="11" ry="8" fill="#00eeee" stroke="#0F380F" stroke-width="1.5" transform="rotate(20,96,73)"/>
+  <ellipse cx="52" cy="77" rx="11" ry="9" fill="white" stroke="#0F380F" stroke-width="1.5"/>
+  <ellipse cx="78" cy="77" rx="11" ry="9" fill="white" stroke="#0F380F" stroke-width="1.5"/>
+  <rect x="41" y="68" width="22" height="9" rx="3" fill="#00cccc"/>
+  <rect x="67" y="68" width="22" height="9" rx="3" fill="#00cccc"/>
+  <ellipse cx="53" cy="79" rx="5" ry="5" fill="#111"/>
+  <ellipse cx="79" cy="79" rx="5" ry="5" fill="#111"/>
+  <circle cx="55" cy="77" r="2" fill="white"/>
+  <circle cx="81" cy="77" r="2" fill="white"/>
+  <ellipse cx="65" cy="87" rx="3" ry="2" fill="#009999"/>
+  <path d="M50,95 Q65,110 80,95" stroke="#0F380F" stroke-width="2.5" fill="#ff6600"/>
+  <rect x="55" y="95" width="7" height="7" rx="1" fill="white" stroke="#0F380F" stroke-width="1"/>
+  <rect x="63" y="95" width="7" height="7" rx="1" fill="white" stroke="#0F380F" stroke-width="1"/>
+  <rect x="71" y="95" width="7" height="7" rx="1" fill="white" stroke="#0F380F" stroke-width="1"/>
+  <path d="M50,95 Q65,110 80,95" stroke="#0F380F" stroke-width="2.5" fill="none"/>
+  <circle cx="35" cy="88" r="4" fill="#ff6600" opacity="0.7"/>
+  <circle cx="95" cy="88" r="4" fill="#ff6600" opacity="0.7"/>
+  <rect x="13" y="92" width="16" height="22" rx="6" fill="#00cccc" stroke="#0F380F" stroke-width="2"/>
+  <rect x="101" y="92" width="16" height="22" rx="6" fill="#00cccc" stroke="#0F380F" stroke-width="2"/>
+  <circle cx="21" cy="117" r="9" fill="#00cccc" stroke="#0F380F" stroke-width="2"/>
+  <circle cx="109" cy="117" r="9" fill="#00cccc" stroke="#0F380F" stroke-width="2"/>
+  <rect x="42" y="116" width="20" height="22" rx="6" fill="#00aaaa" stroke="#0F380F" stroke-width="2"/>
+  <rect x="68" y="116" width="20" height="22" rx="6" fill="#00aaaa" stroke="#0F380F" stroke-width="2"/>
+  <ellipse cx="52" cy="138" rx="13" ry="7" fill="#0F380F"/>
+  <ellipse cx="78" cy="138" rx="13" ry="7" fill="#0F380F"/>
+  <path d="M30,72 Q30,45 65,45 Q100,45 100,72" stroke="#333" stroke-width="7" fill="none" stroke-linecap="round"/>
+  <path d="M30,72 Q30,45 65,45 Q100,45 100,72" stroke="#ff8800" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+  <ellipse cx="28" cy="74" rx="10" ry="13" fill="#333" stroke="#111" stroke-width="2"/>
+  <ellipse cx="28" cy="74" rx="7" ry="10" fill="#ff6600"/>
+  <ellipse cx="28" cy="74" rx="4" ry="5" fill="#ffaa00"/>
+  <ellipse cx="28" cy="74" rx="2" ry="2.5" fill="#111"/>
+  <ellipse cx="102" cy="74" rx="10" ry="13" fill="#333" stroke="#111" stroke-width="2"/>
+  <ellipse cx="102" cy="74" rx="7" ry="10" fill="#ff6600"/>
+  <ellipse cx="102" cy="74" rx="4" ry="5" fill="#ffaa00"/>
+  <ellipse cx="102" cy="74" rx="2" ry="2.5" fill="#111"/>
+</svg></div>
+<div id="svgZeitmon" style="display:none"><svg width="70" height="80" viewBox="0 0 120 140">
+  <polygon points="35,5 25,35 48,28" fill="#222" stroke="#0F380F" stroke-width="2"/>
+  <polygon points="85,5 95,35 72,28" fill="#222" stroke="#0F380F" stroke-width="2"/>
+  <polygon points="37,10 30,30 46,26" fill="#6600aa"/>
+  <polygon points="83,10 90,30 74,26" fill="#6600aa"/>
+  <rect x="20" y="32" width="80" height="70" rx="8" fill="#2a0a3a" stroke="#0F380F" stroke-width="2.5"/>
+  <rect x="30" y="55" width="8" height="8" fill="#6600aa" opacity="0.8"/>
+  <rect x="42" y="55" width="8" height="8" fill="#aa00aa" opacity="0.8"/>
+  <rect x="54" y="55" width="8" height="8" fill="#6600aa" opacity="0.8"/>
+  <rect x="66" y="55" width="8" height="8" fill="#aa00aa" opacity="0.8"/>
+  <rect x="78" y="55" width="8" height="8" fill="#6600aa" opacity="0.8"/>
+  <rect x="36" y="67" width="8" height="8" fill="#aa00aa" opacity="0.6"/>
+  <rect x="48" y="67" width="8" height="8" fill="#6600aa" opacity="0.6"/>
+  <rect x="60" y="67" width="8" height="8" fill="#aa00aa" opacity="0.6"/>
+  <rect x="72" y="67" width="8" height="8" fill="#6600aa" opacity="0.6"/>
+  <ellipse cx="44" cy="44" rx="10" ry="9" fill="#111" stroke="#6600aa" stroke-width="2"/>
+  <ellipse cx="76" cy="44" rx="10" ry="9" fill="#111" stroke="#6600aa" stroke-width="2"/>
+  <ellipse cx="44" cy="44" rx="6" ry="5" fill="#aa00ff"/>
+  <ellipse cx="76" cy="44" rx="6" ry="5" fill="#aa00ff"/>
+  <ellipse cx="44" cy="44" rx="3" ry="3" fill="white"/>
+  <ellipse cx="76" cy="44" rx="3" ry="3" fill="white"/>
+  <polyline points="40,82 46,76 52,82 58,76 64,82 70,76 76,82 80,78" stroke="#aa00ff" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <rect x="28" y="96" width="64" height="30" rx="6" fill="#2a0a3a" stroke="#0F380F" stroke-width="2"/>
+  <polyline points="28,110 36,104 44,110 52,104 60,110 68,104 76,110 84,104 92,110" stroke="#6600aa" stroke-width="2" fill="none"/>
+  <polygon points="14,90 20,80 26,95 20,98" fill="#2a0a3a" stroke="#0F380F" stroke-width="1.5"/>
+  <polygon points="106,90 100,80 94,95 100,98" fill="#2a0a3a" stroke="#0F380F" stroke-width="1.5"/>
+  <rect x="34" y="122" width="18" height="14" rx="4" fill="#2a0a3a" stroke="#0F380F" stroke-width="1.5"/>
+  <rect x="68" y="122" width="18" height="14" rx="4" fill="#2a0a3a" stroke="#0F380F" stroke-width="1.5"/>
+</svg></div>
+</body>
+</html>
